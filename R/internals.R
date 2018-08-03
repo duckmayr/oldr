@@ -12,7 +12,10 @@ extract_r_version_number <- function(x) {
 compare_r_versions <- function(x, y) {
     # Returns TRUE if R version x >= R version y,
     # where x and y are given as strings, e.g., "3.4.0"
-    if ( length(y) == 0 | is.na(y) ) {
+    if ( length(y) == 0 ) {
+        return(TRUE)
+    }
+    if ( is.na(y) ) {
         return(TRUE)
     }
     x <- c(sapply(strsplit(x, "\\."), as.numeric))

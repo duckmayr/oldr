@@ -1,37 +1,32 @@
-#' Install the Newest Usable Version of an R package
-#'
-#' Looks through the CRAN archives for the newest published version of an
-#' R package that is compatible with the version of R installed.
-#'
-#' @param package A character vector of length one giving the name of the
-#'   package to install
-#'
-#' @return A list of length two giving the version of the package installed,
-#'   and the newest version of the package published on CRAN
-#'
-#' @export
+## This is the main workhorse function, called in a loop by the user-facing
+## function.
 install_newest_usable_version <- function(package) {
     # First we need to know what R version we have
     installed_r_version <- sessionInfo()$R.version
     installed_r_version <- paste0(installed_r_version$major, ".",
                                   installed_r_version$minor)
-    # Now we find out if the latest available version of package can be used
-    current_version_info <- available.packages()[package, ]
-    current_version <- current_version_info["Version"]
-    current_depends <- current_version_info["Depends"]
-    install_this_version <- compare_r_versions(installed_r_version,
-                                               current_depends)
-    # If so, we install the latest available version
-    if ( install_this_version ) {
-        install.packages(package)
-        return(list(installed_version = current_version,
-                    current_version = current_version))
+    available_packages <- available.packages()
+    if ( package %in% rownames(available_packages) ) {
+        # We should be able to install if this is the case,
+        # but we double-check
+        current_version_info <- available.packages()[package, ]
+        current_version <- current_version_info["Version"]
+        current_depends <- current_version_info["Depends"]
+        install_this_version <- compare_r_versions(installed_r_version,
+                                                   current_depends)
+        # If so, we install the latest available version
+        if ( install_this_version ) {
+            install.packages(package)
+            return(invisible())
+        }
     }
     # If not, we find all previously available versions
     url_base <- "https://cloud.r-project.org/src/contrib/"
-    archive_con <- gzcon(url(paste0(url_base, "Meta/archive.rds"), "rb"))
-    archive_meta <- readRDS(archive_con)
-    close(archive_con)
+    archive_tmp <- tempfile()
+    download.file(paste0(url_base, "Meta/archive.rds"), archive_tmp,
+                  quiet = TRUE, method = "wget")
+    archive_meta <- readRDS(archive_tmp)
+    unlink(archive_tmp)
     archive_meta <- archive_meta[[package]]
     archive_meta <- archive_meta[order(archive_meta[ , "mtime"]), ]
     versions <- rev(rownames(archive_meta))
@@ -42,7 +37,7 @@ install_newest_usable_version <- function(package) {
         version_no <- extract_match(version_no_pattern, version)
         version_url <- paste0(url_base, "Archive/", version)
         temp <- tempfile()
-        download.file(version_url, temp, quiet = TRUE)
+        download.file(version_url, temp, quiet = TRUE, method = "wget")
         desc_filename <- paste0(package, "/DESCRIPTION")
         untar(temp, files = desc_filename, exdir = tempdir())
         this_desc <- readLines(paste0(tempdir(), "/", desc_filename))
@@ -61,13 +56,29 @@ install_newest_usable_version <- function(package) {
         if ( compare_r_versions(installed_r_version, this_depends) ) {
             install.packages(temp, repos = NULL)
             unlink(temp)
-            return(list(installed_version = version_no,
-                        current_version = current_version))
+            return(invisible())
         }
         # Otherwise, we unlink the temp file and continue with the loop
         unlink(temp)
     }
-    # If we get to the end and haven't installed anything, throw an error
-    stop(paste("Package", package, "unvailable for R version",
-               installed_r_version), call. = FALSE)
+    # If we get to the end and haven't installed anything, throw a warning
+    warning(paste("Package", package, "unvailable for R version",
+                  installed_r_version), call. = FALSE)
+    return(invisible())
+}
+
+
+#' Install the Newest Usable Version of R packages
+#'
+#' Looks through the CRAN archives for the newest published version of
+#' R packages that are compatible with the version of R installed.
+#'
+#' @param package_name A character vector of names of packages to install
+#'
+#' @export
+install.compatible.packages <- function(package_name) {
+    for ( package in package_name ) {
+        install_newest_usable_version(package)
+    }
+    return(invisible())
 }
