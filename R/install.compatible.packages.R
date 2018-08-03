@@ -2,9 +2,7 @@
 ## function.
 install_newest_usable_version <- function(package) {
     # First we need to know what R version we have
-    installed_r_version <- sessionInfo()$R.version
-    installed_r_version <- paste0(installed_r_version$major, ".",
-                                  installed_r_version$minor)
+    installed_r_version <- extract_match("\\d+\\.\\d+\\.\\d+", R.version.string)
     available_packages <- available.packages()
     if ( package %in% rownames(available_packages) ) {
         # We should be able to install if this is the case,
@@ -22,9 +20,10 @@ install_newest_usable_version <- function(package) {
     }
     # If not, we find all previously available versions
     url_base <- "https://cloud.r-project.org/src/contrib/"
+    download_method <- get_download_method()
     archive_tmp <- tempfile()
     download.file(paste0(url_base, "Meta/archive.rds"), archive_tmp,
-                  quiet = TRUE, method = "wget")
+                  quiet = TRUE, method = download_method)
     archive_meta <- readRDS(archive_tmp)
     unlink(archive_tmp)
     archive_meta <- archive_meta[[package]]
@@ -37,7 +36,7 @@ install_newest_usable_version <- function(package) {
         version_no <- extract_match(version_no_pattern, version)
         version_url <- paste0(url_base, "Archive/", version)
         temp <- tempfile()
-        download.file(version_url, temp, quiet = TRUE, method = "wget")
+        download.file(version_url, temp, quiet = TRUE, method = download_method)
         desc_filename <- paste0(package, "/DESCRIPTION")
         untar(temp, files = desc_filename, exdir = tempdir())
         this_desc <- readLines(paste0(tempdir(), "/", desc_filename))

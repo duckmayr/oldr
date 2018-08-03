@@ -35,3 +35,22 @@ compare_r_versions <- function(x, y) {
     }
     return(TRUE)
 }
+
+get_download_method <- function() {
+    R_version <- extract_match("\\d+\\.\\d+\\.\\d+", R.version.string)
+    if ( compare_r_versions(R_version, "3.3.0") ) {
+        return("auto")
+    }
+    else if ( capabilities("libcurl") ) {
+        return("libcurl")
+    } else if ( .Platform$OS.type == "windows" ) {
+        return("wininet")
+    } else if ( Sys.which("wget")[1] != "" ) {
+        return("wget")
+    } else if ( Sys.which("curl")[1] != "" ) {
+        return("curl")
+    } else {
+        stop(paste0("No available method for downloading from https://\n",
+                    "Please install, for example, wget or curl."))
+    }
+}
