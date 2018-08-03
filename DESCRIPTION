@@ -2,7 +2,7 @@ Package: oldr
 Title: Provides Tools to Install the Latest Available Versions of R Packages for Old Versions of R
 Version: 0.0.0.9000
 Authors@R: person("JB", "Duck-Mayr", email = "j.duckmayr@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: oldr provides a function to install the latest available version of an R package for old versions of R.
 License: GPL (>= 2.0)
 Encoding: UTF-8
 LazyData: true
