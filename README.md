@@ -1,5 +1,8 @@
 # oldr
 
+[![Travis-CI Build Status](https://travis-ci.org/duckmayr/oldr.svg?branch=master)](https://travis-ci.org/duckmayr/oldr)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/duckmayr/oldr?branch=master&svg=true)](https://ci.appveyor.com/project/duckmayr/oldr)
+
 `oldr` was created for the simple purpose of allowing users of old versions of `R` to install the latest available versions (on CRAN) of R packages compatible with their version of R.
 
 ## Installing

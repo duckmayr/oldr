@@ -1,0 +1,5 @@
+LICENSE
+
+^\.travis\.yml$
+^appveyor\.yml$
+
