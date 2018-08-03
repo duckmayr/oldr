@@ -8,8 +8,8 @@ install_newest_usable_version <- function(package) {
         # We should be able to install if this is the case,
         # but we double-check
         current_version_info <- available.packages()[package, ]
-        current_version <- current_version_info["Version"]
         current_depends <- current_version_info["Depends"]
+        current_depends <- extract_r_version_number(current_depends)
         install_this_version <- compare_r_versions(installed_r_version,
                                                    current_depends)
         # If so, we install the latest available version

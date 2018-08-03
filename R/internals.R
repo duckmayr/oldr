@@ -38,10 +38,20 @@ compare_r_versions <- function(x, y) {
 
 get_download_method <- function() {
     R_version <- extract_match("\\d+\\.\\d+\\.\\d+", R.version.string)
+    has_libcurl <- capabilities()
+    if ( "libcurl" %in% names(has_libcurl) ) {
+        if ( has_libcurl["libcurl"] ) {
+            has_libcurl <- TRUE
+        } else {
+            has_libcurl <- FALSE
+        }
+    } else {
+        has_libcurl <- FALSE
+    }
     if ( compare_r_versions(R_version, "3.3.0") ) {
         return("auto")
     }
-    else if ( capabilities("libcurl") ) {
+    else if ( has_libcurl ) {
         return("libcurl")
     } else if ( .Platform$OS.type == "windows" ) {
         return("wininet")
