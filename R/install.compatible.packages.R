@@ -77,9 +77,15 @@ install_newest_usable_version <- function(package, R_version, lib) {
 #'   installation for the version of R from which the function was called.
 #'   Any entry that does not contain a version number (e.g. "3.4.3") will
 #'   be ignored.
-#' @param lib A character vector giving the directory to install the packages
-#'   to (see \code{\link[utils]{install.packages}}). The default is the first
-#'   element of \code{\link[base]{.libPaths}}().
+#' @param lib A character vector giving the directories to install the packages
+#'   to (see \code{\link[utils]{install.packages}}). The vector should be
+#'   either length one or of the same length as R_version; the first element
+#'   will be used for installing packages for the first R version supplied,
+#'   the second for the second version, etc.; if only one lib is supplied,
+#'   all packages for all versions will be installed in that directory,
+#'   so if installation is done for multiple R versions, the only surviving
+#'   installations will be for the last supplied element of R_version.
+#'   The default is the first element of \code{\link[base]{.libPaths}}().
 #'
 #' @export
 install.compatible.packages <- function(package_name,
@@ -91,8 +97,13 @@ install.compatible.packages <- function(package_name,
     if ( length(R_version) < 1 ) {
         stop("Provide a valid character vector for R_version.", call. = FALSE)
     }
-    for ( package in package_name ) {
-        install_newest_usable_version(package, R_version, lib)
+    if ( length(lib) == 1 ) {
+        lib <- rep(lib, length(R_version))
+    }
+    for ( i in 1:length(R_version) ) {
+        for ( package in package_name ) {
+            install_newest_usable_version(package, R_version[i], lib[i])
+        }
     }
     return(invisible())
 }

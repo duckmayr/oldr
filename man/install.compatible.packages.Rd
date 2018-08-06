@@ -16,9 +16,15 @@ installation for the version of R from which the function was called.
 Any entry that does not contain a version number (e.g. "3.4.3") will
 be ignored.}
 
-\item{lib}{A character vector giving the directory to install the packages
-to (see \code{\link[utils]{install.packages}}). The default is the first
-element of \code{\link[base]{.libPaths}}().}
+\item{lib}{A character vector giving the directories to install the packages
+to (see \code{\link[utils]{install.packages}}). The vector should be
+either length one or of the same length as R_version; the first element
+will be used for installing packages for the first R version supplied,
+the second for the second version, etc.; if only one lib is supplied,
+all packages for all versions will be installed in that directory,
+so if installation is done for multiple R versions, the only surviving
+installations will be for the last supplied element of R_version.
+The default is the first element of \code{\link[base]{.libPaths}}().}
 }
 \description{
 Looks through the CRAN archives for the newest published version of
