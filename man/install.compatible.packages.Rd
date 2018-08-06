@@ -4,10 +4,21 @@
 \alias{install.compatible.packages}
 \title{Install the Newest Usable Version of R packages}
 \usage{
-install.compatible.packages(package_name)
+install.compatible.packages(package_name, R_version = "installed_version",
+  lib = .libPaths()[1])
 }
 \arguments{
 \item{package_name}{A character vector of names of packages to install}
+
+\item{R_version}{A character vector giving the R version(s) to attempt
+installation for. The default, "installed_version", will attempt
+installation for the version of R from which the function was called.
+Any entry that does not contain a version number (e.g. "3.4.3") will
+be ignored.}
+
+\item{lib}{A character vector giving the directory to install the packages
+to (see \code{\link[utils]{install.packages}}). The default is the first
+element of \code{\link[base]{.libPaths}}().}
 }
 \description{
 Looks through the CRAN archives for the newest published version of

@@ -1,8 +1,7 @@
 ## This is the main workhorse function, called in a loop by the user-facing
 ## function.
-install_newest_usable_version <- function(package) {
-    # First we need to know what R version we have
-    installed_r_version <- extract_match("\\d+\\.\\d+\\.\\d+", R.version.string)
+install_newest_usable_version <- function(package, R_version, lib) {
+    # First we check if package is available for R_version
     available_packages <- available.packages()
     if ( package %in% rownames(available_packages) ) {
         # We should be able to install if this is the case,
@@ -10,11 +9,11 @@ install_newest_usable_version <- function(package) {
         current_version_info <- available.packages()[package, ]
         current_depends <- current_version_info["Depends"]
         current_depends <- extract_r_version_number(current_depends)
-        install_this_version <- compare_r_versions(installed_r_version,
+        install_this_version <- compare_r_versions(R_version,
                                                    current_depends)
         # If so, we install the latest available version
         if ( install_this_version ) {
-            install.packages(package)
+            install.packages(pkgs = package, lib = lib)
             return(invisible())
         }
     }
@@ -52,8 +51,8 @@ install_newest_usable_version <- function(package) {
         # If this package version requires an R version less than or equal
         # to the version of R installed, or does not have an R version
         # requirement, we install it, unlink the temp file, and exit
-        if ( compare_r_versions(installed_r_version, this_depends) ) {
-            install.packages(temp, repos = NULL)
+        if ( compare_r_versions(R_version, this_depends) ) {
+            install.packages(pkgs = temp, lib = lib, repos = NULL)
             unlink(temp)
             return(invisible())
         }
@@ -62,7 +61,7 @@ install_newest_usable_version <- function(package) {
     }
     # If we get to the end and haven't installed anything, throw a warning
     warning(paste("Package", package, "unvailable for R version",
-                  installed_r_version), call. = FALSE)
+                  R_version), call. = FALSE)
     return(invisible())
 }
 
@@ -73,11 +72,27 @@ install_newest_usable_version <- function(package) {
 #' R packages that are compatible with the version of R installed.
 #'
 #' @param package_name A character vector of names of packages to install
+#' @param R_version A character vector giving the R version(s) to attempt
+#'   installation for. The default, "installed_version", will attempt
+#'   installation for the version of R from which the function was called.
+#'   Any entry that does not contain a version number (e.g. "3.4.3") will
+#'   be ignored.
+#' @param lib A character vector giving the directory to install the packages
+#'   to (see \code{\link[utils]{install.packages}}). The default is the first
+#'   element of \code{\link[base]{.libPaths}}().
 #'
 #' @export
-install.compatible.packages <- function(package_name) {
+install.compatible.packages <- function(package_name,
+                                        R_version = "installed_version",
+                                        lib = .libPaths()[1]) {
+    version_pattern <- "\\d+\\.\\d+\\.\\d+"
+    R_version[grepl("installed_version", R_version)] <- R.version.string
+    R_version <- extract_match(version_pattern, R_version)
+    if ( length(R_version) < 1 ) {
+        stop("Provide a valid character vector for R_version.", call. = FALSE)
+    }
     for ( package in package_name ) {
-        install_newest_usable_version(package)
+        install_newest_usable_version(package, R_version, lib)
     }
     return(invisible())
 }
