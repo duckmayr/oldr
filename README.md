@@ -11,7 +11,7 @@ If you have [`devtools`](https://CRAN.R-project.org/package=devtools), you can i
 
     devtools::install_github("duckmayr/oldr")
 
-If you don't, you can download or clone the repository, then use `R CMD build oldr` and `R CMD INSTALL oldr_0.1.tar.gz`
+If you don't, you can download or clone the repository, then use `R CMD build oldr` and `R CMD INSTALL oldr_0.1.0.tar.gz`
 
 (For more details on installing the package from source if you don't have [`devtools`](https://CRAN.R-project.org/package=devtools), see, e.g., [this page](http://kbroman.org/pkg_primer/pages/build.html]))
 
