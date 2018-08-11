@@ -6,4 +6,4 @@ Description: oldr provides a function to install the latest available version of
 License: GPL (>= 2.0)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

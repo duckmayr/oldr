@@ -2,7 +2,8 @@
 ## function.
 install_newest_usable_version <- function(package, R_version, lib) {
     # First we check if package is available for R_version
-    available_packages <- available.packages()
+    download_method <- get_download_method()
+    available_packages <- available.packages(method = download_method)
     if ( package %in% rownames(available_packages) ) {
         # We should be able to install if this is the case,
         # but we double-check
@@ -19,7 +20,6 @@ install_newest_usable_version <- function(package, R_version, lib) {
     }
     # If not, we find all previously available versions
     url_base <- "https://cloud.r-project.org/src/contrib/"
-    download_method <- get_download_method()
     archive_tmp <- tempfile()
     download.file(paste0(url_base, "Meta/archive.rds"), archive_tmp,
                   quiet = TRUE, method = download_method)
@@ -99,6 +99,15 @@ install.compatible.packages <- function(package_name,
     }
     if ( length(lib) == 1 ) {
         lib <- rep(lib, length(R_version))
+    }
+    if ( length(lib) != length(R_version) ) {
+        message("R_version and lib are not of the same length.")
+        message("Recycle the lib vector to be of the same length as R_version?")
+        if ( menu(c("Yes", "No")) == 1 ) {
+            lib <- rep(lib, length.out = length(R_version))
+        } else {
+            stop("Provide a lib vector of appropriate length.", call. = FALSE)
+        }
     }
     for ( i in 1:length(R_version) ) {
         for ( package in package_name ) {

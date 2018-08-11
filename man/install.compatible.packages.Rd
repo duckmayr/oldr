@@ -4,8 +4,8 @@
 \alias{install.compatible.packages}
 \title{Install the Newest Usable Version of R packages}
 \usage{
-install.compatible.packages(package_name, R_version = "installed_version",
-  lib = .libPaths()[1])
+install.compatible.packages(package_name,
+  R_version = "installed_version", lib = .libPaths()[1])
 }
 \arguments{
 \item{package_name}{A character vector of names of packages to install}
