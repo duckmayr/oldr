@@ -7,9 +7,11 @@
 
 ## Installing
 
-If you have [`devtools`](https://CRAN.R-project.org/package=devtools), you can install via
+If you have [`devtools`](https://CRAN.R-project.org/package=devtools), or at least [`remotes`](https://cran.r-project.org/package=remotes), you can install via
 
-    devtools::install_github("duckmayr/oldr")
+```r
+    remotes::install_github("duckmayr/oldr")
+```
 
 If you don't, you can download or clone the repository, then use `R CMD build oldr` and `R CMD INSTALL oldr_0.1.0.tar.gz`
 
