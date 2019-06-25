@@ -7,7 +7,7 @@
 
 ## Installing
 
-If you have [`devtools`](https://CRAN.R-project.org/package=devtools), or at least [`remotes`](https://cran.r-project.org/package=remotes), you can install via
+If you have [`devtools`](https://CRAN.R-project.org/package=devtools), you can install via
 
 ```r
 library(devtools)
